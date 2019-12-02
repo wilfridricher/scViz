@@ -37,7 +37,7 @@ ui <- fluidPage(
   shinyjs::useShinyjs(),
   
   # App title ----
-  titlePanel("scViz (v0.3.2.0)"),
+  titlePanel("scViz (v0.3.2.1)"),
   h4("RShiny application to visualize single cell data"),
   h6("wilfrid.richer@curie.fr"),
 
@@ -118,7 +118,7 @@ ui <- fluidPage(
      tabsetPanel(id = "mainnavbar",
       tabPanel("", icon = icon("home", lib = "glyphicon"),
 	  		p(""),
-      		   fileInput("file", label = c("Rdata","RDS")), 
+      		   fileInput("file", label = "R file"), 
       		   actionButton(inputId="btnLoad","Load"),
       		   p("Be patient, it can take time..."),
       		   verbatimTextOutput("out")), 
@@ -146,8 +146,8 @@ ui <- fluidPage(
 	  		p(""),
       		   fluidRow(
       				column(1,
-      					colourInput("fp_col1", "", "gray",showColour="background"),
-      					colourInput("fp_col2", "", "red",showColour="background")),
+      					colourInput("fp_col1", "", "gray",showColour="both"),
+      					colourInput("fp_col2", "", "red",showColour="both")),
       		   		column(6,sliderInput("cutoff.scale", "Cutoff values:",
                   				min = -10, max = 10,
                   				value = c(0,5))),
@@ -168,9 +168,9 @@ ui <- fluidPage(
       tabPanel("Heatmap", 
 	  		p(""),
       		   fluidRow(
-      				column(1, colourInput("hm_col1", "", "blue",showColour="background")),
-      				column(1, colourInput("hm_col2", "", "white",showColour="background")),
-      				column(1, colourInput("hm_col3", "", "red",showColour="background")),
+      				column(1, colourInput("hm_col1", "", "blue",showColour="both")),
+      				column(1, colourInput("hm_col2", "", "white",showColour="both")),
+      				column(1, colourInput("hm_col3", "", "red",showColour="both")),
       				column(8,
                   	checkboxInput("legend_hm", "Include legend", TRUE),
                   	checkboxInput("topgenes", "Selection of top5 highest mean ratio\n(cautious: help to open up a idea)", FALSE))
@@ -232,6 +232,7 @@ server <- function(input, output, session) {
     }
 
 	  if(!is.null(dim(SingleCells.Normdata@assays$integrated))){
+		DefaultAssay(object = SingleCells.Normdata) <<- "integrated"
 		obsDataMatrix<<-SingleCells.Normdata@assays$integrated
 	  }else{
 		obsDataMatrix<<-SingleCells.Normdata@assays$RNA
